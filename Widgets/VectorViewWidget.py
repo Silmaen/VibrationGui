@@ -1,8 +1,15 @@
+# encoding: utf8
+"""
+Module de définition d'une vue de vecteur
+"""
 import tkinter as tk
 import tkinter.ttk as ttk
 
 
 class VectorView(ttk.Frame):
+    """
+    Simple vue permettant l'affichage de vecteur.
+    """
     def __init__(self, master=None, **kw):
         ttk.Frame.__init__(self, master, **kw)
         # subwidgets
@@ -27,6 +34,9 @@ class VectorView(ttk.Frame):
         self.configure(x=0.0, y=0.0, z=0.0)
 
     def configure(self, cnf=None, **kw):
+        """
+        Fonction de configuration (Setter General)
+        """
         key = 'x'
         if key in kw:
             self.wx.set(kw[key])
@@ -44,6 +54,11 @@ class VectorView(ttk.Frame):
     config = configure
 
     def cget(self, key):
+        """
+        Getter general
+        :param key: nom de la variable demandée
+        :return: sa valeur
+        """
         option = 'x'
         if key == option:
             return self.wx.get()

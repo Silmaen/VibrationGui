@@ -105,6 +105,15 @@ class ConsoleWidget(ttk.Frame):
         option = 'log_level'
         if key == option:
             return self.log_level.get()
+        option = 'log_special'
+        if key == option:
+            return self.log_special.get()
+        option = 'horodatage'
+        if key == option:
+            return self.horodatage.get()
+        option = 'print_type'
+        if key == option:
+            return self.print_type.get()
         return ttk.Frame.cget(self, key)
 
     def autoscroll_change(self):

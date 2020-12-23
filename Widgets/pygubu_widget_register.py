@@ -1,3 +1,4 @@
+# encoding: utf8
 """
 Module permettant de rendre disponible les Widgets de ce répertoire dans Pygudu
 """

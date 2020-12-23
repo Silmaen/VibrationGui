@@ -1,9 +1,16 @@
+# encoding: utf8
+"""
+Module de définition d'un widget intégrant tout ce qu'il faut pour tracer des graph dans Tk
+"""
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
 
 class MyGraphWidget(tk.Frame):
+    """
+    Widget de dessin d'un graph
+    """
     def __init__(self, master=None, cnf={}, **kw):
         tk.Frame.__init__(self, master, cnf, **kw)
         self.figure = Figure()
@@ -25,5 +32,32 @@ class MyGraphWidget(tk.Frame):
         self.draw()
 
     def draw(self):
+        """
+        Actualisation de la zone de dessin
+        """
         self.canvas.draw()
         self.toolbar.update()
+
+    def clear_graph(self):
+        """
+        Clear all graphs
+        """
+        self.figure.clear()
+        self.subplots.clear()
+        self.draw()
+
+    def replot_three_graph(self, t, x, y, z):
+        """
+
+        :param t: Axe des abscisses
+        :param x: Première courbe
+        :param y: Seconde courbe
+        :param z: Troisième courbe
+        """
+        self.figure.clear()
+        self.subplots.clear()
+        self.subplots.append(self.figure.add_subplot(111))
+        self.subplots[-1].plot(t, x)
+        self.subplots[-1].plot(t, y)
+        self.subplots[-1].plot(t, z)
+        self.draw()
