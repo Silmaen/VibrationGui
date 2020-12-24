@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.0">
+  <object class="ttk.Frame" id="MainFrame">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <layout manager="pack">
+      <property name="expand">true</property>
+      <property name="fill">both</property>
+      <property name="propagate">True</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Frame" id="frame_haut">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="propagate">True</property>
+          <property name="sticky">nsew</property>
+          <property type="col" id="0" name="weight">1</property>
+          <property type="row" id="0" name="minsize">400</property>
+          <property type="row" id="0" name="weight">4</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="frame_gauche">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="propagate">True</property>
+              <property name="sticky">nsew</property>
+              <property type="col" id="0" name="minsize">100</property>
+              <property type="col" id="0" name="weight">1</property>
+              <property type="row" id="0" name="minsize">400</property>
+              <property type="row" id="0" name="weight">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Notebook" id="notebook_droit">
+            <property name="height">200</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">nsew</property>
+              <property type="col" id="1" name="minsize">500</property>
+              <property type="col" id="1" name="weight">5</property>
+              <property type="row" id="0" name="minsize">400</property>
+              <property type="row" id="0" name="weight">1</property>
+            </layout>
+            <child>
+              <object class="ttk.Notebook.Tab" id="tab_temp">
+                <property name="sticky">nsew</property>
+                <property name="text" translatable="yes">Analyse Temporelle</property>
+                <child>
+                  <object class="customwidgets.AffichageTemporel" id="affichage_temporel">
+                    <layout manager="grid">
+                      <property name="propagate">True</property>
+                      <property name="sticky">nsew</property>
+                      <property type="col" id="0" name="weight">1</property>
+                      <property type="row" id="0" name="minsize">0</property>
+                      <property type="row" id="0" name="weight">1</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="customwidgets.ConsoleWidget" id="console_widget">
+        <layout manager="grid">
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="sticky">nsew</property>
+          <property type="col" id="0" name="weight">1</property>
+          <property type="row" id="1" name="minsize">100</property>
+          <property type="row" id="1" name="weight">1</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>

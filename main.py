@@ -12,9 +12,7 @@ except Exception as err:
     print(str(err))
 try:
     import numpy as np
-# for plotting
-    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-    from matplotlib.figure import Figure
+    from MainFrame import MainFrameWidget
 except Exception as err:
     good_env = False
     print("ERREUR: un module nécessaire est absent: " + str(err))
@@ -29,7 +27,12 @@ x = 2 * np.sin(2 * np.pi * t)
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.title("Super Programme de test")
-    root.geometry("1024x768")
+    root.title("Analyse de vibration")
+    root.geometry("800x600")
 
+    w = MainFrameWidget(master=root)
+    #w.grid(sticky="nsew")
+    #w.console_widget.rowconfigure('0', weight='1')
+    #w.console_widget.columnconfigure('0', weight='1')
+    w.pack(expand=True, fill='both')
     root.mainloop()
