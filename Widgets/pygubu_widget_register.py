@@ -6,6 +6,7 @@ from pygubu import BuilderObject, register_widget
 from GraphWidget import MyGraphWidget
 from VectorViewWidget import VectorView
 from ConsoleViewWidget import ConsoleWidget
+from TemporalView import AffichageTemporel
 
 
 class GraphWidgetBuilder(BuilderObject):
@@ -30,3 +31,11 @@ class ConsoleWidgetBuilder(BuilderObject):
 
 register_widget('customwidgets.ConsoleWidget', ConsoleWidgetBuilder,
                 'ConsoleWidget', ('tk', 'ttk', 'customwidgets'))
+
+
+class AffichageTemporelBuilder(BuilderObject):
+    class_ = AffichageTemporel
+
+
+register_widget('customwidgets.AffichageTemporel', AffichageTemporelBuilder,
+                'AffichageTemporel', ('tk', 'ttk', 'customwidgets'))
