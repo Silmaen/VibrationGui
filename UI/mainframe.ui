@@ -28,10 +28,20 @@
               <property name="propagate">True</property>
               <property name="sticky">nsew</property>
               <property type="col" id="0" name="minsize">100</property>
-              <property type="col" id="0" name="weight">1</property>
+              <property type="col" id="0" name="weight">0</property>
               <property type="row" id="0" name="minsize">400</property>
               <property type="row" id="0" name="weight">1</property>
             </layout>
+            <child>
+              <object class="customwidgets.Controlframe" id="controlframe_1">
+                <layout manager="grid">
+                  <property name="propagate">False</property>
+                  <property name="sticky">nsew</property>
+                  <property type="col" id="0" name="weight">1</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+              </object>
+            </child>
           </object>
         </child>
         <child>

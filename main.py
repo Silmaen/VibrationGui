@@ -29,10 +29,6 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title("Analyse de vibration")
     root.geometry("800x600")
-
     w = MainFrameWidget(master=root)
-    #w.grid(sticky="nsew")
-    #w.console_widget.rowconfigure('0', weight='1')
-    #w.console_widget.columnconfigure('0', weight='1')
     w.pack(expand=True, fill='both')
     root.mainloop()

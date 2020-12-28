@@ -22,6 +22,7 @@ default_level = 1
 max_level = 5
 level_name = ["ERREUR FATALE ", "ERREUR ", "AVERTISSEMENT ", "REMARQUE ", "DEBUG ", "TRACE "]
 
+
 class ConsoleWidget(ttk.Frame):
     """
     Widget permettant l'affichage d'une console en lecture seule.
@@ -135,7 +136,7 @@ class ConsoleWidget(ttk.Frame):
             self.ConsoleText.see('end')
         self.ConsoleText.configure(state="disabled")
 
-    def log(self, msg: str, lvl: int = default_level):
+    def log(self, msg, lvl: int = default_level):
         """
         fonction de log dans la console
         :param msg: le message à afficher
@@ -143,6 +144,8 @@ class ConsoleWidget(ttk.Frame):
         """
         if lvl > self.log_level.get() or (not self.log_special.get() and lvl < 0):
             return
+        if type(msg) == bytes:
+            msg = msg.decode("utf8")
         self.ConsoleText.configure(state="normal")
         prefix = ""
         if self.horodatage.get():
@@ -153,7 +156,8 @@ class ConsoleWidget(ttk.Frame):
         else:
             if self.print_type.get():
                 prefix += level_name[lvl]
-        to_print = [prefix + a.rstrip() + "\n" for a in msg.split()]  # Découpages des différentes lignes et formatage
+        # Découpages des différentes lignes et formatage
+        to_print = [prefix + a.rstrip() + "\n" for a in msg.splitlines(keepends=False)]
         for p in to_print:
             self.ConsoleText.insert('end', p)
         if self.autoscroll.get():

@@ -7,6 +7,7 @@ from GraphWidget import MyGraphWidget
 from VectorViewWidget import VectorView
 from ConsoleViewWidget import ConsoleWidget
 from TemporalView import AffichageTemporel
+from ControlFrame import ControlframeWidget
 
 
 # ------------ graph widget ---------------------
@@ -43,3 +44,12 @@ class AffichageTemporelBuilder(BuilderObject):
 
 register_widget('customwidgets.AffichageTemporel', AffichageTemporelBuilder,
                 'AffichageTemporel', ('tk', 'ttk', 'customwidgets'))
+
+
+# ------------ Controlframe widget ---------------------
+class ControlframeBuilder(BuilderObject):
+    class_ = ControlframeWidget
+
+
+register_widget('customwidgets.Controlframe', ControlframeBuilder,
+                'Controlframe', ('tk', 'ttk', 'customwidgets'))
