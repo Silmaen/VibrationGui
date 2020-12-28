@@ -99,3 +99,14 @@ class MyGraphWidget(ttk.Frame):
             for xx in x:
                 self.subplot.plot(t, xx)
         self.draw()
+
+    def plot_spectrogram(self, t, f, s_log):
+        """
+        Dessine un spectrogramme
+        :param t: échelle de temps
+        :param f: échelle de fréquence
+        :param s_log: le tableau de valeur
+        """
+        self.clear_graph()
+        self.subplot.pcolormesh(t, f, s_log, shading="auto", cmap='ocean')
+        self.draw()
