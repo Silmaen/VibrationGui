@@ -20,6 +20,10 @@ class AffichageTemporel(ttk.Frame):
         ttk.Frame.__init__(self, master, **kw)
         # zone graphique
         self.Graphique = MyGraphWidget(self)
+        self.Graphique.configure(graph_title="Analyse Temporelle",
+                                 graph_x_label="Temps",
+                                 graph_y_label="Amplitude")
+        #self.Graphique.draw()
         self.Graphique.grid(sticky='nsew')
 
         # zone de résultats
@@ -89,12 +93,15 @@ class AffichageTemporel(ttk.Frame):
             self.log("Erreur: Il manque des données (time, ax, ay, az)")
             return
         self.ValeurMin.configure(x=data["ax"].min(), y=data["ay"].min(), z=data["az"].min())
-        self.ValeurMin_time.configure(x=data["time"][data["ax"].argmin()], y=data["time"][data["ay"].argmin()],
+        self.ValeurMin_time.configure(x=data["time"][data["ax"].argmin()],
+                                      y=data["time"][data["ay"].argmin()],
                                       z=data["time"][data["az"].argmin()])
         self.ValeurMax.configure(x=data["ax"].max(), y=data["ay"].max(), z=data["az"].max())
-        self.ValeurMax_time.configure(x=data["time"][data["ax"].argmax()], y=data["time"][data["ay"].argmax()],
+        self.ValeurMax_time.configure(x=data["time"][data["ax"].argmax()],
+                                      y=data["time"][data["ay"].argmax()],
                                       z=data["time"][data["az"].argmax()])
-        self.ValeurRMS.configure(x=np.sqrt(np.mean(np.square(data["ax"]))), y=np.sqrt(np.mean(np.square(data["ay"]))),
+        self.ValeurRMS.configure(x=np.sqrt(np.mean(np.square(data["ax"]))),
+                                 y=np.sqrt(np.mean(np.square(data["ay"]))),
                                  z=np.sqrt(np.mean(np.square(data["az"]))))
         self.ValeurStd.configure(x=data["ax"].std(), y=data["ay"].std(), z=data["az"].std())
-        self.Graphique.replot_three_graph(data["time"], data["ax"], data["ay"], data["az"])
+        self.Graphique.plot_graphs(data["time"], [data["ax"], data["ay"], data["az"]], ["ax", "ay", "az"])

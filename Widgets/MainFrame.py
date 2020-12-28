@@ -5,7 +5,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from ConsoleViewWidget import ConsoleWidget
 from TemporalView import AffichageTemporel
-from ControlFrame import ControlframeWidget
+from ControlFrame import ControlFrameWidget
 from Tools.Measure import MesureManager
 
 
@@ -32,7 +32,7 @@ class MainFrameWidget(ttk.Frame):
         self.frame_gauche = ttk.Frame(self.frame_haut)
         self.frame_gauche.grid(sticky='nsew')
 
-        self.control_frame = ControlframeWidget(self.frame_gauche)
+        self.control_frame = ControlFrameWidget(self.frame_gauche)
         self.control_frame.configure(mesure_callback = self.mesure)
         self.control_frame.grid(sticky='nsew')
 
@@ -74,18 +74,11 @@ class MainFrameWidget(ttk.Frame):
         self.affichage_temporel.set_data(data)
 
     def update_data(self):
+        self.control_frame.button_mesure.configure(state="normal")
         if self.mesure_manager.data_change:
             self.affichage_temporel.set_data(self.mesure_manager.get_data())
 
     def mesure(self):
         self.log("Démarrage des mesures", 3)
-        #import numpy as np
-        #t = np.arange(0, 10, .01)
-        #data = {
-        #    "time": t,
-        #    "ax": 2 * np.sin(2 * np.pi * t * np.random.rand()),
-        #    "ay": 2 * np.sin(2 * np.pi * t * np.random.rand()),
-        #    "az": 2 * np.cos(2 * np.pi * t * np.random.rand()),
-        #}
-        #self.affichage_temporel.set_data(data)
+        self.control_frame.button_mesure.configure(state="disabled")
         self.mesure_manager.Mesure()

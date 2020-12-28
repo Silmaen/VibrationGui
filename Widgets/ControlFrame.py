@@ -4,7 +4,7 @@ Module de définition du cadre des controls
 import tkinter.ttk as ttk
 
 
-class ControlframeWidget(ttk.Frame):
+class ControlFrameWidget(ttk.Frame):
     """
     Le cadre avec les boutons de control
     """

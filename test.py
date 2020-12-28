@@ -23,7 +23,7 @@ class TestFrame(ttk.Frame):
 
     def redraw(self):
         x = 2 * np.sin(2 * np.pi * t * np.random.rand())
-        self.figure.replot_one_graph(t, x)
+        self.figure.plot_one_graph(t, x)
 
 
 if __name__ == '__main__':

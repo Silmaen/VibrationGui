@@ -15,10 +15,10 @@ Ce projet est conçu pour fonctionner avec python 3.8 (testé avec python 3.8
 sous linux et 3.9 sous windows).
 Il dépend de plusieurs librairies externes :
 
- * numpy : pour l’algèbre linéaire et l’analyse de données.
- * matplotlib : pour tracer des courbes.
- * pygubu (et pygubu designer) : outils pour simplifier l’utilisation de tkinter.
- * pyserial : pour communiquer avec l’outil de mesure
+ * numpy : pour l’algèbre linéaire et l’analyse de données.
+ * matplotlib : pour tracer des courbes.
+ * pygubu (et pygubu designer) : outils pour simplifier l’utilisation de tkinter.
+ * pyserial : pour communiquer avec l’outil de mesure
 
 En outre, ce programme nécessite l’installation de tcl/tk pour le bon fonctionnement 
 de tkinter. (sous windows, tout est installé avec python, sous linux il peut 

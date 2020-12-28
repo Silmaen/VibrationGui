@@ -11,7 +11,7 @@ class MesureManager:
     """
     Classe de gestion des des mesures, permettant de mesurer dans un thread séparé
     """
-    def __init__(self, root=None, log_callback=None, post_mesure=None,**kw):
+    def __init__(self, root=None, log_callback=None, post_mesure=None):
         self.root = root
         self.log_callback = log_callback
         self.queue = queue.Queue()
@@ -34,9 +34,10 @@ class MesureManager:
         :return:
         """
         try:
-            msg = self.queue.get(0)
+            self.queue.get(False)
             # Show result of the task if needed
-            ### w.ButtonMesure.configure(state="normal")
+            if self.post_mesure is not None:
+                self.post_mesure()
         except queue.Empty:
             self.root.after(100, self.process_queue)
 
@@ -44,8 +45,7 @@ class MesureManager:
         """
         exécute une mesure dans un thread séparé
         """
-        self.log('serialVibrationGui_support.Mesure')
-        ### w.ButtonMesure.configure(state="disabled")
+        self.log('MesureManager.Mesure', 4)
         self.queue = queue.Queue()
         self.ThreadedMesure(self).start()
         self.root.after(100, self.process_queue)
@@ -57,8 +57,6 @@ class MesureManager:
         """
         self.data = data
         self.data_change = True
-        if self.post_mesure is not None:
-            self.post_mesure()
 
     def get_data(self):
         """
@@ -106,7 +104,7 @@ class MesureManager:
                 if len(it) != 4:
                     self.parent.log("format de linge incorrect")
                 try:
-                    tt = int(it[0])
+                    tt = float(it[0])/1.e6
                     tax = float(it[1])
                     tay = float(it[2])
                     taz = float(it[3])

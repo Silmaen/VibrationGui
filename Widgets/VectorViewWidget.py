@@ -4,6 +4,7 @@ Module de définition d'une vue de vecteur
 """
 import tkinter as tk
 import tkinter.ttk as ttk
+import numpy
 
 
 class VectorView(ttk.Frame):
@@ -15,17 +16,17 @@ class VectorView(ttk.Frame):
         # subwidgets
         o = ttk.Label(self, text=' X', width=2)
         o.grid(row=0, column=0)
-        self.wx = tk.DoubleVar(0.000)
+        self.wx = tk.StringVar(0.000)
         o = ttk.Label(self, width=4, justify='center', textvariable=self.wx, anchor='center', relief='sunken')
         o.grid(row=0, column=1, sticky='nswe')
         o = ttk.Label(self, text=' Y', width=2)
         o.grid(row=0, column=2)
-        self.wy = tk.DoubleVar(0.000)
+        self.wy = tk.StringVar(0.000)
         o = ttk.Label(self, width=4, justify='center', textvariable=self.wy, anchor='center', relief='sunken')
         o.grid(row=0, column=3, sticky='nswe')
         o = ttk.Label(self, text=' Z', width=2)
         o.grid(row=0, column=4)
-        self.wz = tk.DoubleVar(0.000)
+        self.wz = tk.StringVar(0.000)
         o = ttk.Label(self, width=4, justify='center', textvariable=self.wz, anchor='center', relief='sunken')
         o.grid(row=0, column=5, sticky='nswe')
         self.columnconfigure(1, weight=1)
@@ -39,15 +40,24 @@ class VectorView(ttk.Frame):
         """
         key = 'x'
         if key in kw:
-            self.wx.set(kw[key])
+            if type(kw[key]) in [float, numpy.float64]:
+                self.wx.set("{:.3f}".format(kw[key]))
+            else:
+                self.wx.set(kw[key])
             del kw[key]
         key = 'y'
         if key in kw:
-            self.wy.set(kw[key])
+            if type(kw[key]) in [float, numpy.float64]:
+                self.wy.set("{:.3f}".format(kw[key]))
+            else:
+                self.wy.set(kw[key])
             del kw[key]
         key = 'z'
         if key in kw:
-            self.wz.set(kw[key])
+            if type(kw[key]) in [float, numpy.float64]:
+                self.wz.set("{:.3f}".format(kw[key]))
+            else:
+                self.wz.set(kw[key])
             del kw[key]
         ttk.Frame.configure(self, cnf, **kw)
 
@@ -72,4 +82,3 @@ class VectorView(ttk.Frame):
         if key == option:
             return self.wx.get(), self.wy.get(), self.wz.get()
         return ttk.Frame.cget(self, key)
-

@@ -45,7 +45,10 @@ class ConsoleWidget(ttk.Frame):
         self.frame_bas = ttk.Frame(self)
         self.chk_autoscroll = ttk.Checkbutton(self.frame_bas)
         self.autoscroll = tk.BooleanVar()
-        self.chk_autoscroll.config(text='Défilement Automatique', variable=self.autoscroll, command=self.autoscroll_change)
+        self.chk_autoscroll.config(
+            text='Défilement Automatique',
+            variable=self.autoscroll,
+            command=self.autoscroll_change)
         self.chk_autoscroll.pack(anchor='nw', side='left')
         self.chk_wrap = ttk.Checkbutton(self.frame_bas)
         self.wordwrap = tk.BooleanVar()
@@ -55,7 +58,13 @@ class ConsoleWidget(ttk.Frame):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        self.configure(autoscroll=False, wordwrap=False, log_level=default_level, log_special=True, horodatage=True, print_type=True)
+        self.configure(
+            autoscroll=False,
+            wordwrap=False,
+            log_level=default_level,
+            log_special=True,
+            horodatage=True,
+            print_type=True)
 
     def configure(self, cnf=None, **kw):
         """

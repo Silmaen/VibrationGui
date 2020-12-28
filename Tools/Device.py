@@ -15,8 +15,7 @@ class VibrationDevice:
         self.parent = parent
         if port in [None, ""]:
             return
-        if True:
-        #try:
+        try:
             self.com = serial.Serial(port=port, baudrate=115200, timeout=10)
             self.com.set_buffer_size(rx_size=1000000)
             start = time.time()
@@ -24,33 +23,31 @@ class VibrationDevice:
             if rdy:
                 self.__write(b"quiestu", True)
                 while time.time() - start < 10:  # timeout 10second
-                    line = self.__readline(True)
+                    line = self.__read_line(True)
                     if b"DeviceVibration" in line:
                         self.__isVibDev = True
                         break
-        #except Exception as err:
-        #    self.parent.log(str(err))
+        except Exception as err:
+            self.parent.log(str(err))
 
     def __write(self, st: bytes, force=False):
         if not self.__isVibDev and not force:
             return False
-        #self.parent.log(st, -1)
         self.com.write(st)
         self.com.flush()
         return self.__wait_ack(force)
 
-    def __readline(self, force=False):
+    def __read_line(self, force=False):
         if not self.__isVibDev and not force:
             return ""
         line = self.com.readline()
-        #self.parent.log(line, -2)
         return line
 
     def __wait_ready(self, force=False):
         start = time.time()
         rdy = False
         while time.time() - start < 10:  # timeout 10second
-            line = self.__readline(force)
+            line = self.__read_line(force)
             if b"RDY" in line:
                 rdy = True
                 break
@@ -60,7 +57,7 @@ class VibrationDevice:
         start = time.time()
         rdy = False
         while time.time() - start < 10:  # timeout 10second
-            line = self.__readline(force)
+            line = self.__read_line(force)
             if b"ACK" in line:
                 rdy = True
                 break
@@ -72,12 +69,12 @@ class VibrationDevice:
         """
         return self.__isVibDev
 
-    def set_measure_time(self, time):
+    def set_measure_time(self, mes_time):
         """
         Défini le temps de mesure sur le périphérique
-        :param time: le temps de mesure en secondes
+        :param mes_time: le temps de mesure en secondes
         """
-        self.__write(("setmtime " + str(time*1000000)).encode("utf8"))
+        self.__write(("setmtime " + str(mes_time*1000000)).encode("utf8"))
         self.__wait_ready()
 
     def measure(self):
@@ -91,12 +88,12 @@ class VibrationDevice:
         self.__write(b"measure")
         lines = []
         self.parent.log("measuring, please wait...", 3)
-        rdycount = 0
-        while(1):
-            line = self.__readline().strip()
+        rdy_count = 0
+        while 1:
+            line = self.__read_line().strip()
             if b"RDY" in line:
-                rdycount += 1
-                if rdycount == 3:
+                rdy_count += 1
+                if rdy_count == 3:
                     break
                 continue
             if b"MES" in line:
