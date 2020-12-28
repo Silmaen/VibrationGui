@@ -33,7 +33,12 @@ class MainFrameWidget(ttk.Frame):
         self.frame_gauche.grid(sticky='nsew')
 
         self.control_frame = ControlFrameWidget(self.frame_gauche)
-        self.control_frame.configure(mesure_callback = self.mesure)
+        self.control_frame.configure(log=self.log)
+        self.control_frame.configure(mesure_callback=self.begin_mesure)
+        self.control_frame.configure(new_callback=self.new_data)
+        self.control_frame.configure(save_callback=self.save_data)
+        self.control_frame.configure(load_callback=self.load_data)
+        self.control_frame.configure(graph_change_callback=self.current_data_change)
         self.control_frame.grid(sticky='nsew')
 
         self.notebook_droit = ttk.Notebook(self.frame_haut)
@@ -48,7 +53,9 @@ class MainFrameWidget(ttk.Frame):
         self.console_widget.configure(log_level=5, autoscroll=True, wordwrap=True)
         self.console_widget.grid(row='1', sticky='nsew')
 
-        self.mesure_manager = MesureManager(master, self.log, self.update_data)
+        self.mesure_manager = MesureManager(master, self.log, self.end_measure)
+        self.global_data = []
+        self.project_name = ""
 
     def configure(self, cnf=None, **kw):
         """
@@ -73,12 +80,82 @@ class MainFrameWidget(ttk.Frame):
         """
         self.affichage_temporel.set_data(data)
 
-    def update_data(self):
+    def new_data(self):
+        """
+        Remise à zéro des données
+        """
+        self.global_data.clear()
+        self.project_name = ""
+        self.control_frame.configure(data_list=[])
+        self.affichage_temporel.clear_data()
+
+    def current_data_change(self):
+        """
+        Changement de data.
+        """
+        index = self.control_frame.combobox_data.current()
+        self.affichage_temporel.set_data(self.global_data[index])
+
+    def save_data(self):
+        """
+        Sauvegarde les données
+        """
+        from pathlib import Path
+        import pickle
+        if self.project_name == "":
+            # todo: demander un nom de projet
+            self.project_name = "projet"
+        if len(self.global_data) < 1:
+            self.log("Pas de données à sauvegarder")
+            return
+        data_dir = Path(__file__).parent.parent / "data"
+        if not data_dir.is_dir():
+            if data_dir.exists():
+                data_dir.unlink()
+            data_dir.mkdir()
+        data_file = data_dir / (self.project_name + ".vmd")
+        if data_file.exists():
+            data_file.unlink()
+        with open(data_file, "wb") as f:
+            pickle.dump(self.global_data, f, pickle.HIGHEST_PROTOCOL)
+        self.log("Données sauvegardée dans " + str(data_file), 3)
+
+    def load_data(self):
+        """
+        Chargement de données depuis le disque dur
+        """
+        from pathlib import Path
+        import pickle
+        if self.project_name == "":
+            # todo: demander un nom de projet
+            self.project_name = "projet"
+        data_dir = Path(__file__).parent.parent / "data"
+        data_file = data_dir / (self.project_name + ".vmd")
+        self.log("Chargement des données depuis " + str(data_file), 3)
+        if not data_file.exists():
+            self.log("Le fichier " + str(data_file) + " N'existe pas.")
+            return
+        self.new_data()
+        with open(data_file, 'rb') as f:
+            self.global_data = pickle.load(f)
+        self.affichage_temporel.set_data(self.global_data[-1])
+        self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
+        self.log("Données chargées depuis " + str(data_file), 3)
+
+    def end_measure(self):
+        """
+        Call back pour le gestionnaire de mesure sera appelé lorsque les mesures seront finies
+        """
         self.control_frame.button_mesure.configure(state="normal")
         if self.mesure_manager.data_change:
-            self.affichage_temporel.set_data(self.mesure_manager.get_data())
+            self.global_data.append(self.mesure_manager.get_data())
+            self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
+            self.affichage_temporel.set_data(self.global_data[-1])
 
-    def mesure(self):
+    def begin_mesure(self):
+        """
+        Procédure de mesure: démarre les mesure dans un thread à part
+        """
         self.log("Démarrage des mesures", 3)
         self.control_frame.button_mesure.configure(state="disabled")
         self.mesure_manager.Mesure()

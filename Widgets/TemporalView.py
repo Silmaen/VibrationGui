@@ -23,7 +23,6 @@ class AffichageTemporel(ttk.Frame):
         self.Graphique.configure(graph_title="Analyse Temporelle",
                                  graph_x_label="Temps",
                                  graph_y_label="Amplitude")
-        #self.Graphique.draw()
         self.Graphique.grid(sticky='nsew')
 
         # zone de résultats
@@ -77,12 +76,25 @@ class AffichageTemporel(ttk.Frame):
 
     def log(self, msg: str, lvl: int = 1):
         """
-        fonction de log dans la console
+        Fonction de log dans la console
         :param msg: le message à afficher
         :param lvl: le niveau du message (cf. les niveaux de log)
         """
         if self.log_callback:
             self.log_callback(msg, lvl)
+
+    def clear_data(self):
+        """
+        Nettoie la vue temporelle
+        """
+        self.ValeurMin.configure(x=0., y=0., z=0.)
+        self.ValeurMin_time.configure(x=0., y=0., z=0.)
+        self.ValeurMax.configure(x=0., y=0., z=0.)
+        self.ValeurMax_time.configure(x=0., y=0., z=0.)
+        self.ValeurRMS.configure(x=0., y=0., z=0.)
+        self.ValeurStd.configure(x=0., y=0., z=0.)
+        self.Graphique.clear_graph()
+        self.Graphique.draw()
 
     def set_data(self, data):
         """

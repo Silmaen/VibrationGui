@@ -75,6 +75,15 @@ class MyGraphWidget(ttk.Frame):
         """
         self.canvas.draw()
 
+    def clear_graph(self):
+        """
+        Nettoie la vue graphique
+        """
+        self.subplot.clear()
+        self.subplot.set_title(self.graph_title)
+        self.subplot.set_xlabel(self.graph_x_label)
+        self.subplot.set_ylabel(self.graph_y_label)
+
     def plot_graphs(self, t, x: list, labels: list = None):
         """
         Efface le graph courant et trace la courbe x(t).
@@ -82,31 +91,11 @@ class MyGraphWidget(ttk.Frame):
         :param x: liste des courbes
         :param labels: liste des labels de courbes
         """
-        self.subplot.clear()
-        self.subplot.set_title(self.graph_title)
-        self.subplot.set_xlabel(self.graph_x_label)
-        self.subplot.set_ylabel(self.graph_y_label)
+        self.clear_graph()
         if labels is not None and len(labels) == len(x):
             for i, xx in enumerate(x):
                 self.subplot.plot(t, xx, label=labels[i])
         else:
             for xx in x:
                 self.subplot.plot(t, xx)
-        self.draw()
-
-    def plot_one_graph(self, t, x, label: str = None):
-        """
-        Efface le graph courant et trace la courbe x(t).
-        :param t: Axe des abscisses
-        :param x:  courbe
-        :param label: Le nom de la courbe
-        """
-        self.subplot.clear()
-        self.subplot.set_title(self.graph_title)
-        self.subplot.set_xlabel(self.graph_x_label)
-        self.subplot.set_ylabel(self.graph_y_label)
-        if label not in [None, ""]:
-            self.subplot.plot(t, x, label="ax")
-        else:
-            self.subplot.plot(t, x, label=label)
         self.draw()
