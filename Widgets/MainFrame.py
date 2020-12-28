@@ -79,4 +79,13 @@ class MainFrameWidget(ttk.Frame):
 
     def mesure(self):
         self.log("Démarrage des mesures", 3)
+        #import numpy as np
+        #t = np.arange(0, 10, .01)
+        #data = {
+        #    "time": t,
+        #    "ax": 2 * np.sin(2 * np.pi * t * np.random.rand()),
+        #    "ay": 2 * np.sin(2 * np.pi * t * np.random.rand()),
+        #    "az": 2 * np.cos(2 * np.pi * t * np.random.rand()),
+        #}
+        #self.affichage_temporel.set_data(data)
         self.mesure_manager.Mesure()
