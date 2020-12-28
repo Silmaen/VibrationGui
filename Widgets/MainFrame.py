@@ -1,9 +1,9 @@
 """
 Module de définition de la page principale du programme
 """
-import tkinter as tk
 import tkinter.ttk as ttk
 from ConsoleViewWidget import ConsoleWidget
+from FrequencyView import FrequencyView
 from TemporalView import AffichageTemporel
 from ControlFrame import ControlFrameWidget
 from Tools.Measure import MesureManager
@@ -42,12 +42,28 @@ class MainFrameWidget(ttk.Frame):
         self.control_frame.grid(sticky='nsew')
 
         self.notebook_droit = ttk.Notebook(self.frame_haut)
+        self.notebook_droit.grid(column='1', row='0', sticky='nsew')
+
         self.affichage_temporel = AffichageTemporel(self.notebook_droit, log=self.log)
         self.affichage_temporel.grid(sticky='nsew')
         self.affichage_temporel.rowconfigure('0', minsize='0', weight='1')
         self.affichage_temporel.columnconfigure('0', weight='1')
         self.notebook_droit.add(self.affichage_temporel, sticky='nsew', text='Analyse Temporelle')
-        self.notebook_droit.grid(column='1', row='0', sticky='nsew')
+
+        self.rms_view = FrequencyView(self.notebook_droit, log=self.log)
+        self.rms_view.grid(sticky='nsew')
+        self.rms_view.rowconfigure('0', minsize='0', weight='1')
+        self.rms_view.columnconfigure('0', weight='1')
+        self.rms_view.configure(graph_title="RMS Mobile",
+                                 graph_x_label="Temps",
+                                 graph_y_label="Amplitude")
+        self.notebook_droit.add(self.rms_view, sticky='nsew', text='RMS mobile')
+
+        self.freq_view = FrequencyView(self.notebook_droit, log=self.log)
+        self.freq_view.grid(sticky='nsew')
+        self.freq_view.rowconfigure('0', minsize='0', weight='1')
+        self.freq_view.columnconfigure('0', weight='1')
+        self.notebook_droit.add(self.freq_view, sticky='nsew', text='Analyse Fréquentielle')
 
         self.console_widget = ConsoleWidget(self)
         self.console_widget.configure(log_level=5, autoscroll=True, wordwrap=True)
@@ -73,12 +89,14 @@ class MainFrameWidget(ttk.Frame):
         """
         self.console_widget.log(msg, lvl)
 
-    def set_data_temporal(self, data):
+    def set_data(self, data):
         """
         Mets à jour l'affichage avec les données.
         :param data: the set of data, need data["time"], data["ax"], data["ay"], data["az"]
         """
         self.affichage_temporel.set_data(data)
+        self.rms_view.set_data(data, "RMS")
+        self.freq_view.set_data(data)
 
     def new_data(self):
         """
@@ -88,13 +106,15 @@ class MainFrameWidget(ttk.Frame):
         self.project_name = ""
         self.control_frame.configure(data_list=[])
         self.affichage_temporel.clear_data()
+        self.freq_view.clear_data()
+        self.rms_view.clear_data()
 
     def current_data_change(self):
         """
         Changement de data.
         """
         index = self.control_frame.combobox_data.current()
-        self.affichage_temporel.set_data(self.global_data[index])
+        self.set_data(self.global_data[index])
 
     def save_data(self):
         """
@@ -138,7 +158,7 @@ class MainFrameWidget(ttk.Frame):
         self.new_data()
         with open(data_file, 'rb') as f:
             self.global_data = pickle.load(f)
-        self.affichage_temporel.set_data(self.global_data[-1])
+        self.set_data(self.global_data[-1])
         self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
         self.log("Données chargées depuis " + str(data_file), 3)
 
@@ -150,7 +170,7 @@ class MainFrameWidget(ttk.Frame):
         if self.mesure_manager.data_change:
             self.global_data.append(self.mesure_manager.get_data())
             self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
-            self.affichage_temporel.set_data(self.global_data[-1])
+            self.set_data(self.global_data[-1])
 
     def begin_mesure(self):
         """

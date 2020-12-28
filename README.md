@@ -19,6 +19,7 @@ Il dépend de plusieurs librairies externes :
  * matplotlib : pour tracer des courbes.
  * pygubu (et pygubu designer) : outils pour simplifier l’utilisation de tkinter.
  * pyserial : pour communiquer avec l’outil de mesure
+ * pyfftw : Calcul de transformée de Fourrier rapide
 
 En outre, ce programme nécessite l’installation de tcl/tk pour le bon fonctionnement 
 de tkinter. (sous windows, tout est installé avec python, sous linux il peut 
