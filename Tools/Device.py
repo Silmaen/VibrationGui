@@ -5,6 +5,8 @@ import serial
 import time
 import serial.tools.list_ports
 
+old_mesure_methode = True
+
 
 class VibrationDevice:
     """
@@ -16,7 +18,7 @@ class VibrationDevice:
         if port in [None, ""]:
             return
         try:
-            self.com = serial.Serial(port=port, baudrate=115200, timeout=10)
+            self.com = serial.Serial(port=port, baudrate=250000, timeout=10)
             self.com.set_buffer_size(rx_size=1000000)
             start = time.time()
             rdy = self.__wait_ready(True)
@@ -46,6 +48,9 @@ class VibrationDevice:
         if trace:
             self.parent.log(line.decode("ascii"), -2)
         return line
+
+    def __read_line_fast(self):
+        return self.com.readline()
 
     def __wait_ready(self, force=False, trace=False):
         start = time.time()
@@ -115,21 +120,40 @@ class VibrationDevice:
             return []
         self.com.flushInput()
         self.__write(b"measure")
-        lines = []
-        self.parent.log("measuring, please wait...", 3)
-        rdy_count = 0
-        while 1:
-            line = self.__read_line().strip()
-            if b"RDY" in line:
-                rdy_count += 1
-                if rdy_count == 3:
+        if old_mesure_methode:
+            lines = []
+            self.parent.log("measuring, please wait...", 3)
+            rdy_count = 0
+            while 1:
+                line = self.__read_line().strip()
+                if b"RDY" in line:
+                    rdy_count += 1
+                    if rdy_count == 3:
+                        break
+                    continue
+                if b"MES" in line:
+                    lines = []
+                    continue
+                lines.append(line)
+            self.parent.log("measure done", 3)
+        else:
+            raw_data = b""
+            self.parent.log("measuring, please wait...", 3)
+            while 1:
+                raw_line = self.com.read(3)
+                raw_data += raw_line
+                if b"RDY" in raw_line:
                     break
-                continue
-            if b"MES" in line:
-                lines = []
-                continue
-            lines.append(line)
-        self.parent.log("measure done", 3)
+            self.parent.log("measure done", 3)
+            lines = []
+            inlines = raw_data.splitlines(keepends=False)
+            for inline in inlines:
+                if b"MES" in inline:
+                    lines = []
+                    continue
+                if b"RDY" in inline:
+                    break
+                lines.append(inline)
         return lines
 
 
