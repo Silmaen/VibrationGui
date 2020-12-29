@@ -65,6 +65,15 @@ class MainFrameWidget(ttk.Frame):
         self.freq_view.columnconfigure('0', weight='1')
         self.notebook_droit.add(self.freq_view, sticky='nsew', text='Analyse Fréquentielle')
 
+        self.psd_view = FrequencyView(self.notebook_droit, log=self.log)
+        self.psd_view.grid(sticky='nsew')
+        self.psd_view.rowconfigure('0', minsize='0', weight='1')
+        self.psd_view.columnconfigure('0', weight='1')
+        self.psd_view.configure(graph_title="Puissance Spectrale",
+                                graph_x_label="Fréquence",
+                                graph_y_label="Puissance")
+        self.notebook_droit.add(self.psd_view, sticky='nsew', text='Puissance spectrale')
+
         self.spec_view = FrequencyView(self.notebook_droit, log=self.log)
         self.spec_view.grid(sticky='nsew')
         self.spec_view.rowconfigure('0', minsize='0', weight='1')
@@ -107,6 +116,7 @@ class MainFrameWidget(ttk.Frame):
         self.rms_view.set_data(data, "RMS")
         self.freq_view.set_data(data)
         self.spec_view.set_data(data, "spectrogram")
+        self.psd_view.set_data(data, "PSD")
 
     def new_data(self):
         """
@@ -119,6 +129,7 @@ class MainFrameWidget(ttk.Frame):
         self.freq_view.clear_data()
         self.rms_view.clear_data()
         self.spec_view.clear_data()
+        self.psd_view.clear_data()
 
     def current_data_change(self):
         """

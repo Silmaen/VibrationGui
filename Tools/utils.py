@@ -84,3 +84,25 @@ def compute_spectrogram(data_t, data_x):
     d, fs, s = compute_period(data_t)
     f, t2, sxx = signal.spectrogram(data_x, fs=fs, nperseg=int(fs), noverlap=int(fs)-1)
     return f, t2, sxx
+
+
+def compute_PSD(data_t, data_x, data_y=None, data_z=None):
+    """
+    Calcule la courbe de puissance spectrale
+    :param data_t: échelle de temps
+    :param data_x: première courbe
+    :param data_y: seconde courbe
+    :param data_z: troisième courbe
+    :return: fréquences, intensité
+    """
+    from scipy import signal
+    d, fs, s = compute_period(data_t)
+    f, pxx = signal.welch(data_x, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
+    f, pyy = signal.welch(data_y, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
+    f, pzz = signal.welch(data_z, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
+    if data_y is None:
+        return f, pxx
+    if data_z is None:
+        return f, pxx, pyy
+    return f, pxx, pyy, pzz
+

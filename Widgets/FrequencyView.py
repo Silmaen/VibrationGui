@@ -4,7 +4,7 @@ Module de définition de la vue d'analyse fréquentielle
 """
 import tkinter.ttk as ttk
 from GraphWidget import MyGraphWidget
-from Tools.utils import fftw, compute_period, RMS_curve, compute_spectrogram
+from Tools.utils import fftw, compute_period, RMS_curve, compute_spectrogram, compute_PSD
 from VectorViewWidget import VectorView
 
 
@@ -98,14 +98,15 @@ class FrequencyView(ttk.Frame):
         if "time" not in data or "ax" not in data or "ay" not in data or "az" not in data:
             self.log("Erreur: Il manque des données (time, ax, ay, az)")
             return
-        if calcul == "RMS":
-            t, x, y, z = RMS_curve(data["time"], data["ax"], data["ay"], data["az"])
-            self.Graphique.plot_graphs(t, [x, y, z], ["ax", "ay", "az"])
-        elif calcul == "spectrogram":
-            ampl = np.sqrt(data["ax"]**2 + data["ay"]**2 + data["az"]**2)
+        if calcul == "spectrogram":
+            ampl = np.sqrt(data["ax"] ** 2 + data["ay"] ** 2 + data["az"] ** 2)
             f, t2, sxx = compute_spectrogram(data["time"], ampl)
             self.Graphique.plot_spectrogram(t2, f, np.log(sxx))
             return
+        elif calcul == "RMS":
+            t, x, y, z = RMS_curve(data["time"], data["ax"], data["ay"], data["az"])
+        elif calcul == "PSD":
+            t, x, y, z = compute_PSD(data["time"], data["ax"], data["ay"], data["az"])
         else:
             n = np.size(data["time"])
             dt, _, s = compute_period(data["time"])
