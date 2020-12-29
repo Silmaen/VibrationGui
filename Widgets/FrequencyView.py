@@ -4,7 +4,7 @@ Module de définition de la vue d'analyse fréquentielle
 """
 import tkinter.ttk as ttk
 from GraphWidget import MyGraphWidget
-from Tools.utils import fftw, compute_period, RMS_curve
+from Tools.utils import fftw, compute_period, RMS_curve, compute_spectrogram
 from VectorViewWidget import VectorView
 
 
@@ -101,13 +101,18 @@ class FrequencyView(ttk.Frame):
         if calcul == "RMS":
             t, x, y, z = RMS_curve(data["time"], data["ax"], data["ay"], data["az"])
             self.Graphique.plot_graphs(t, [x, y, z], ["ax", "ay", "az"])
+        elif calcul == "spectrogram":
+            ampl = np.sqrt(data["ax"]**2 + data["ay"]**2 + data["az"]**2)
+            f, t2, sxx = compute_spectrogram(data["time"], ampl)
+            self.Graphique.plot_spectrogram(t2, f, np.log(sxx))
+            return
         else:
-            N = np.size(data["time"])
+            n = np.size(data["time"])
             dt, _, s = compute_period(data["time"])
             self.log("écart type de l'échantillon temporel: " + str(s), 3)
-            x = 2.0 / N * np.abs(fftw(data["ax"]))
-            y = 2.0 / N * np.abs(fftw(data["ay"]))
-            z = 2.0 / N * np.abs(fftw(data["az"]))
+            x = 2.0 / n * np.abs(fftw(data["ax"]))
+            y = 2.0 / n * np.abs(fftw(data["ay"]))
+            z = 2.0 / n * np.abs(fftw(data["az"]))
             t = np.linspace(0.0, 1.0 / (2.0 * dt), len(x))
 
         self.peek_value.configure(x=x.max(), y=y.max(), z=z.max())

@@ -55,8 +55,8 @@ class MainFrameWidget(ttk.Frame):
         self.rms_view.rowconfigure('0', minsize='0', weight='1')
         self.rms_view.columnconfigure('0', weight='1')
         self.rms_view.configure(graph_title="RMS Mobile",
-                                 graph_x_label="Temps",
-                                 graph_y_label="Amplitude")
+                                graph_x_label="Temps",
+                                graph_y_label="Amplitude")
         self.notebook_droit.add(self.rms_view, sticky='nsew', text='RMS mobile')
 
         self.freq_view = FrequencyView(self.notebook_droit, log=self.log)
@@ -64,6 +64,15 @@ class MainFrameWidget(ttk.Frame):
         self.freq_view.rowconfigure('0', minsize='0', weight='1')
         self.freq_view.columnconfigure('0', weight='1')
         self.notebook_droit.add(self.freq_view, sticky='nsew', text='Analyse Fréquentielle')
+
+        self.spec_view = FrequencyView(self.notebook_droit, log=self.log)
+        self.spec_view.grid(sticky='nsew')
+        self.spec_view.rowconfigure('0', minsize='0', weight='1')
+        self.spec_view.columnconfigure('0', weight='1')
+        self.spec_view.configure(graph_title="Spectrogramme",
+                                 graph_x_label="Temps",
+                                 graph_y_label="Fréquence")
+        self.notebook_droit.add(self.spec_view, sticky='nsew', text='Spectrogramme')
 
         self.console_widget = ConsoleWidget(self)
         self.console_widget.configure(log_level=5, autoscroll=True, wordwrap=True)
@@ -97,6 +106,7 @@ class MainFrameWidget(ttk.Frame):
         self.affichage_temporel.set_data(data)
         self.rms_view.set_data(data, "RMS")
         self.freq_view.set_data(data)
+        self.spec_view.set_data(data, "spectrogram")
 
     def new_data(self):
         """
@@ -108,6 +118,7 @@ class MainFrameWidget(ttk.Frame):
         self.affichage_temporel.clear_data()
         self.freq_view.clear_data()
         self.rms_view.clear_data()
+        self.spec_view.clear_data()
 
     def current_data_change(self):
         """
