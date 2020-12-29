@@ -109,8 +109,9 @@ class FrequencyView(ttk.Frame):
             t, x, y, z = compute_PSD(data["time"], data["ax"], data["ay"], data["az"])
         else:
             n = np.size(data["time"])
-            dt, _, s = compute_period(data["time"])
-            self.log("écart type de l'échantillon temporel: " + str(s), 3)
+            dt, f, s = compute_period(data["time"])
+            self.log("écart type de l'échantillon temporel: {:.5f} ".format(s) + ["BAD", "GOOD"][s < 0.001], 3)
+            self.log("Fréquence d'échantillonnage         : {:.1f} Hz".format(f), 3)
             x = 2.0 / n * np.abs(fftw(data["ax"]))
             y = 2.0 / n * np.abs(fftw(data["ay"]))
             z = 2.0 / n * np.abs(fftw(data["az"]))

@@ -5,6 +5,9 @@ from threading import Thread
 import queue
 from Tools.Device import findDevice
 import numpy as np
+import scipy.signal as sp
+
+from Tools.utils import compute_period
 
 
 class MesureManager:
@@ -18,6 +21,9 @@ class MesureManager:
         self.data = None
         self.data_change = False
         self.post_mesure = post_mesure
+        self.option_time = 5
+        self.option_range = 3
+        self.option_resolution = 1
 
     def log(self, msg: str, lvl: int = 1):
         """
@@ -40,6 +46,23 @@ class MesureManager:
                 self.post_mesure()
         except queue.Empty:
             self.root.after(100, self.process_queue)
+
+    def configure(self, **kw):
+        """
+        Fonction de configuration (Setter General)
+        """
+        key = 'option_time'
+        if key in kw:
+            self.option_time = kw[key]
+            del kw[key]
+        key = 'option_range'
+        if key in kw:
+            self.option_range = kw[key]
+            del kw[key]
+        key = 'option_resolution'
+        if key in kw:
+            self.option_resolution = kw[key]
+            del kw[key]
 
     def Mesure(self):
         """
@@ -83,6 +106,9 @@ class MesureManager:
             if not device:
                 self.parent.log("Pas trouvé de périphérique compatible, pas de mesure.")
                 return
+            device.set_measure_time(self.parent.option_time)
+            device.set_measure_range(self.parent.option_range)
+            device.set_measure_resolution(self.parent.option_resolution)
             self.parent.set_data(self.mesure(device))
             device.com.close()
             self.parent.log("Mesure Terminée", 3)
@@ -118,4 +144,16 @@ class MesureManager:
             data["ax"] = data["ax"] - data["ax"].mean()
             data["ay"] = data["ay"] - data["ay"].mean()
             data["az"] = data["az"] - data["az"].mean()
+            dt, f, std = compute_period(data["time"])
+            data["sampling"] = {
+                "number": np.size(data["time"]),
+                "dt": dt,
+                "frequency": f,
+                "deviation": std
+            }
+            # filter frequencies to keep between 1 Hz - 100 Hz
+            #sos = sp.butter(10, [1, 50], 'bandpass', fs=f, output='sos')
+            #data["ax"] = sp.sosfilt(sos, data["ax"])
+            #data["ay"] = sp.sosfilt(sos, data["ay"])
+            #data["az"] = sp.sosfilt(sos, data["az"])
             return data

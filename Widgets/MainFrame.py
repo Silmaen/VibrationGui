@@ -2,11 +2,13 @@
 Module de définition de la page principale du programme
 """
 import tkinter.ttk as ttk
+import numpy as np
 from ConsoleViewWidget import ConsoleWidget
 from FrequencyView import FrequencyView
 from TemporalView import AffichageTemporel
 from ControlFrame import ControlFrameWidget
 from Tools.Measure import MesureManager
+from Tools.utils import compute_period
 
 
 class MainFrameWidget(ttk.Frame):
@@ -180,6 +182,17 @@ class MainFrameWidget(ttk.Frame):
         self.new_data()
         with open(data_file, 'rb') as f:
             self.global_data = pickle.load(f)
+        # création des informations de sampling si elles n'existent pas déjà...
+        for i in range(len(self.global_data)):
+            if "sampling" in self.global_data[i]:
+                continue
+            dt, f, std = compute_period(self.global_data[i]["time"])
+            self.global_data[i]["sampling"] = {
+                "number": np.size(self.global_data[i]["time"]),
+                "dt": dt,
+                "frequency": f,
+                "deviation": std
+            }
         self.set_data(self.global_data[-1])
         self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
         self.log("Données chargées depuis " + str(data_file), 3)
@@ -188,7 +201,7 @@ class MainFrameWidget(ttk.Frame):
         """
         Call back pour le gestionnaire de mesure sera appelé lorsque les mesures seront finies
         """
-        self.control_frame.button_mesure.configure(state="normal")
+        self.control_frame.readyToMeasure()
         if self.mesure_manager.data_change:
             self.global_data.append(self.mesure_manager.get_data())
             self.control_frame.configure(data_list=[i for i in range(len(self.global_data))])
@@ -199,5 +212,8 @@ class MainFrameWidget(ttk.Frame):
         Procédure de mesure: démarre les mesure dans un thread à part
         """
         self.log("Démarrage des mesures", 3)
-        self.control_frame.button_mesure.configure(state="disabled")
+        self.control_frame.measuring()
+        self.mesure_manager.option_time = self.control_frame.cget("mesure_time")
+        self.mesure_manager.option_range = self.control_frame.cget("mesure_range")
+        self.mesure_manager.option_resolution = self.control_frame.cget("mesure_resolution")
         self.mesure_manager.Mesure()
