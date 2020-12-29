@@ -152,8 +152,8 @@ class MesureManager:
                 "deviation": std
             }
             # filter frequencies to keep between 1 Hz - 100 Hz
-            #sos = sp.butter(10, [1, 50], 'bandpass', fs=f, output='sos')
-            #data["ax"] = sp.sosfilt(sos, data["ax"])
-            #data["ay"] = sp.sosfilt(sos, data["ay"])
-            #data["az"] = sp.sosfilt(sos, data["az"])
+            sos = sp.butter(10, [0.1, 150], 'bandpass', fs=f, output='sos')
+            data["ax"] = sp.sosfilt(sos, data["ax"])
+            data["ay"] = sp.sosfilt(sos, data["ay"])
+            data["az"] = sp.sosfilt(sos, data["az"])
             return data
