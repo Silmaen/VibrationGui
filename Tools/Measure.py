@@ -165,8 +165,9 @@ class MesureManager:
                 "frequency": f,
                 "deviation": std
             }
+            self.parent.log("Fréquence d'échantillon: " + str(f))
             # filter frequencies to keep between 1 Hz - 100 Hz
-            sos = sp.butter(10, [0.1, 150], 'bandpass', fs=f, output='sos')
+            sos = sp.butter(10, [0.1, min(150, 0.9 * f/2.0)], 'bandpass', fs=f, output='sos')
             data["ax"] = sp.sosfilt(sos, data["ax"])
             data["ay"] = sp.sosfilt(sos, data["ay"])
             data["az"] = sp.sosfilt(sos, data["az"])
