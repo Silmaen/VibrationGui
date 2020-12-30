@@ -24,6 +24,8 @@ class MesureManager:
         self.option_time = 5
         self.option_range = 3
         self.option_resolution = 1
+        self.option_motor_delay = 100
+        self.option_motor_throttle = 20
 
     def log(self, msg: str, lvl: int = 1):
         """
@@ -62,6 +64,14 @@ class MesureManager:
         key = 'option_resolution'
         if key in kw:
             self.option_resolution = kw[key]
+            del kw[key]
+        key = 'option_motor_delay'
+        if key in kw:
+            self.option_motor_delay = kw[key]
+            del kw[key]
+        key = 'option_motor_throttle'
+        if key in kw:
+            self.option_motor_throttle = kw[key]
             del kw[key]
 
     def Mesure(self):
@@ -110,6 +120,8 @@ class MesureManager:
             device.set_measure_time(self.parent.option_time)
             device.set_measure_range(self.parent.option_range)
             device.set_measure_resolution(self.parent.option_resolution)
+            device.set_motor_delay(self.parent.option_motor_delay)
+            device.set_motor_throttle(self.parent.option_motor_throttle)
             self.parent.set_data(self.mesure(device))
             device.com.close()
             self.parent.log("Mesure Terminée", 3)
@@ -164,13 +176,13 @@ class MesureManager:
                 "frequency": f,
                 "deviation": std
             }
-            self.parent.log("Fréquence d'échantillon: " + str(f))
+            self.parent.log("Fréquence d'échantillon: " + str(f), 3)
             # filter frequencies to keep between 1 Hz - 100 Hz
-            sos = sp.butter(10, [0.1, min(150, 0.9 * f/2.0)], 'bandpass', fs=f, output='sos')
-            data["ax"] = sp.sosfilt(sos, data["ax"])
-            data["ay"] = sp.sosfilt(sos, data["ay"])
-            data["az"] = sp.sosfilt(sos, data["az"])
-            data["v5"] = sp.sosfilt(sos, data["v5"])
-            data["v"] = sp.sosfilt(sos, data["v"])
-            data["i"] = sp.sosfilt(sos, data["i"])
+            # sos = sp.butter(10, [0.1, min(150, 0.9 * f/2.0)], 'bandpass', fs=f, output='sos')
+            # data["ax"] = sp.sosfilt(sos, data["ax"])
+            # data["ay"] = sp.sosfilt(sos, data["ay"])
+            # data["az"] = sp.sosfilt(sos, data["az"])
+            # data["v5"] = sp.sosfilt(sos, data["v5"])
+            # data["v"] = sp.sosfilt(sos, data["v"])
+            # data["i"] = sp.sosfilt(sos, data["i"])
             return data

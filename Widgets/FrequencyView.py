@@ -127,11 +127,11 @@ class FrequencyView(ttk.Frame):
             x = 2.0 / n * np.abs(fftw(data["ax"]))
             y = 2.0 / n * np.abs(fftw(data["ay"]))
             z = 2.0 / n * np.abs(fftw(data["az"]))
-            v5 = 2.0 / n * np.abs(fftw(data["ax"]))
-            v = 2.0 / n * np.abs(fftw(data["ay"]))
-            i = 2.0 / n * np.abs(fftw(data["az"]))
+            v5 = 2.0 / n * np.abs(fftw(data["v5"]))
+            v = 2.0 / n * np.abs(fftw(data["v"]))
+            i = 2.0 / n * np.abs(fftw(data["i"]))
             t = np.linspace(0.0, 1.0 / (2.0 * dt), len(x))
-            curves = [0, 0, 0, 0, 0, 0]
+            curves = [0, 0, 0, 1, 1, 2]
 
         self.peek_value.configure(x=x.max(), y=y.max(), z=z.max())
         self.peek_value_at.configure(x=t[x.argmax()], y=t[y.argmax()], z=t[z.argmax()])

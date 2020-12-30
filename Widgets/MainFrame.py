@@ -57,14 +57,14 @@ class MainFrameWidget(ttk.Frame):
         self.rms_view.rowconfigure('0', minsize='0', weight='1')
         self.rms_view.columnconfigure('0', weight='1')
         self.rms_view.configure(plot_number=3,
-                                graph_title_0="Analyse Fréquentielle",
+                                graph_title_0="Moyenne quadratique mobile",
                                 graph_x_label_0="",
                                 graph_y_label_0="Acceleration (m/s/s)",
                                 graph_title_1="",
                                 graph_x_label_1="",
                                 graph_y_label_1="Voltage (V)",
                                 graph_title_2="",
-                                graph_x_label_2="Fréquence (Hz)",
+                                graph_x_label_2="Temps (s)",
                                 graph_y_label_2="Courant (A)")
         self.notebook_droit.add(self.rms_view, sticky='nsew', text='RMS mobile')
 
@@ -72,6 +72,16 @@ class MainFrameWidget(ttk.Frame):
         self.freq_view.grid(sticky='nsew')
         self.freq_view.rowconfigure('0', minsize='0', weight='1')
         self.freq_view.columnconfigure('0', weight='1')
+        self.freq_view.configure(plot_number=3,
+                                 graph_title_0="Analyse Fréquentielle",
+                                 graph_x_label_0="",
+                                 graph_y_label_0="Acceleration",
+                                 graph_title_1="",
+                                 graph_x_label_1="",
+                                 graph_y_label_1="Voltage",
+                                 graph_title_2="",
+                                 graph_x_label_2="Fréquence (Hz)",
+                                 graph_y_label_2="Courant")
         self.notebook_droit.add(self.freq_view, sticky='nsew', text='Analyse Fréquentielle')
 
         self.psd_view = FrequencyView(self.notebook_droit, log=self.log)
@@ -231,4 +241,6 @@ class MainFrameWidget(ttk.Frame):
         self.mesure_manager.option_time = self.control_frame.cget("mesure_time")
         self.mesure_manager.option_range = self.control_frame.cget("mesure_range")
         self.mesure_manager.option_resolution = self.control_frame.cget("mesure_resolution")
+        self.mesure_manager.option_motor_delay = self.control_frame.cget("motor_delay")
+        self.mesure_manager.option_motor_throttle = self.control_frame.cget("motor_throttle")
         self.mesure_manager.Mesure()

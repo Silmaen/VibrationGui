@@ -83,8 +83,8 @@ class VibrationDevice:
         Défini le temps de mesure sur le périphérique
         :param mes_time: le temps de mesure en secondes
         """
-        self.__write(("set_mtime " + str(mes_time) + "000000\n").encode("ascii"), trace=True)
-        if not self.__wait_ready(trace=True):
+        self.__write(("set_mtime " + str(mes_time) + "000000\n").encode("ascii"))
+        if not self.__wait_ready():
             self.parent.log("Impossible de définir le temps de mesure")
 
     def set_measure_range(self, mes_range=16):
@@ -95,8 +95,8 @@ class VibrationDevice:
         if type(mes_range) != int:
             return
         mes_range = min(max(mes_range, 0), 3)
-        self.__write(("set_range " + str(mes_range) + "\n").encode("ascii"), trace=True)
-        if not self.__wait_ready(trace=True):
+        self.__write(("set_range " + str(mes_range) + "\n").encode("ascii"))
+        if not self.__wait_ready():
             self.parent.log("Impossible de définir l'échelle de mesure")
 
     def set_measure_resolution(self, mes_resolution):
@@ -107,9 +107,35 @@ class VibrationDevice:
         if type(mes_resolution) != int:
             return
         mes_resolution = min(max(mes_resolution, 0), 1)
-        self.__write(("set_resolution " + str(mes_resolution) + "\n").encode("ascii"), trace=True)
-        if not self.__wait_ready(trace=True):
+        self.__write(("set_resolution " + str(mes_resolution) + "\n").encode("ascii"))
+        if not self.__wait_ready():
             self.parent.log("Impossible de définir la résolution")
+
+    def set_motor_delay(self, mot_delay):
+        """
+        Défini la résolution de mesure
+        :param mot_delay: [100-1000] ms (défaut=100)
+        """
+        if type(mot_delay) != int:
+            self.parent.log("Mauvais type de donnée de délai: " + str(type(mot_delay)), 2)
+            return
+        mot_delay = min(max(mot_delay, 100), 1000)
+        self.__write(("set_wait " + str(mot_delay) + "\n").encode("ascii"))
+        if not self.__wait_ready():
+            self.parent.log("Impossible de définir le délai de moteur")
+
+    def set_motor_throttle(self, mot_throttle):
+        """
+        Défini la résolution de mesure
+        :param mot_throttle: [0-100] % (défaut=20%)
+        """
+        if type(mot_throttle) != int:
+            self.parent.log("Mauvais type de donnée de gaz: " + str(type(mot_throttle)), 2)
+            return
+        mot_throttle = min(max(mot_throttle, 0), 100)
+        self.__write(("set_throttle " + str(mot_throttle) + "\n").encode("ascii"))
+        if not self.__wait_ready():
+            self.parent.log("Impossible de définir les gaz moteur")
 
     def measure(self):
         """

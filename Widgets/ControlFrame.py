@@ -51,15 +51,27 @@ class ControlFrameWidget(ttk.Frame):
         self.combobox_resolution.grid(row='4', sticky='nsew')
         self.combobox_resolution.bind("<<ComboboxSelected>>", self.validate_resolution)
 
-        ttk.Label(self.frame_mesure, text='Durée de mesure:').grid(row='5', sticky='nsew')
+        ttk.Label(self.frame_mesure, text='Durée de mesure (s):').grid(row='5', sticky='nsew')
         self.spin_time = ttk.Spinbox(self.frame_mesure)
         self.spin_time.config(state="readonly", command=self.time_change, from_=5, to=15, increment=1)
         self.spin_time.set(5)
         self.spin_time.grid(row='6', sticky='nsew')
 
+        ttk.Label(self.frame_mesure, text='Delay activation moteur (ms):').grid(row='7', sticky='nsew')
+        self.moteur_time = ttk.Spinbox(self.frame_mesure)
+        self.moteur_time.config(state="readonly", command=self.moteur_time_change, from_=100, to=1000, increment=100)
+        self.moteur_time.set(100)
+        self.moteur_time.grid(row='8', sticky='nsew')
+
+        ttk.Label(self.frame_mesure, text='gaz moteur (%):').grid(row='9', sticky='nsew')
+        self.moteur_throttle = ttk.Spinbox(self.frame_mesure)
+        self.moteur_throttle.config(state="readonly", command=self.moteur_throttle_change, from_=0, to=100, increment=10)
+        self.moteur_throttle.set(20)
+        self.moteur_throttle.grid(row='10', sticky='nsew')
+
         self.button_mesure = ttk.Button(self.frame_mesure)
         self.button_mesure.config(state='disabled', text='Mesure')
-        self.button_mesure.grid(row='7', sticky='nsew')
+        self.button_mesure.grid(row='11', sticky='nsew')
 
         ttk.Separator(self, orient='horizontal').grid(column='0', row='3', sticky='nsew')
 
@@ -76,6 +88,8 @@ class ControlFrameWidget(ttk.Frame):
         self.range_change_callback = None
         self.resolution_change_callback = None
         self.time_change_callback = None
+        self.moteur_time_change_callback = None
+        self.moteur_throttle_change_callback = None
         self.configure(**kw)
 
     def validate_data(self, event):
@@ -112,6 +126,22 @@ class ControlFrameWidget(ttk.Frame):
         self.log("Changement du temps: " + str(self.spin_time.get()), 5)
         if self.time_change_callback is not None:
             self.time_change_callback()
+
+    def moteur_time_change(self):
+        """
+        Événement lors d'un changement de valeur
+        """
+        self.log("Changement du délai moteur: " + str(self.moteur_time.get()), 5)
+        if self.moteur_time_change_callback is not None:
+            self.moteur_time_change_callback()
+
+    def moteur_throttle_change(self):
+        """
+        Événement lors d'un changement de valeur
+        """
+        self.log("Changement des gaz moteur: " + str(self.moteur_throttle.get()), 5)
+        if self.moteur_throttle_change_callback is not None:
+            self.moteur_throttle_change_callback()
 
     def configure(self, cnf=None, **kw):
         """
@@ -172,6 +202,10 @@ class ControlFrameWidget(ttk.Frame):
             return self.combobox_range.current()
         if key == "mesure_resolution":
             return self.combobox_resolution.current()
+        if key == "motor_delay":
+            return int(self.moteur_time.get())
+        if key == "motor_throttle":
+            return int(self.moteur_throttle.get())
         return ttk.Frame.cget(self, key)
 
     def log(self, msg: str, lvl: int = 1):
@@ -203,6 +237,8 @@ class ControlFrameWidget(ttk.Frame):
         self.combobox_range.configure(state="disabled")
         self.combobox_resolution.configure(state="disabled")
         self.spin_time.configure(state="disabled")
+        self.moteur_time.configure(state="disabled")
+        self.moteur_throttle.configure(state="disabled")
 
     def readyToMeasure(self):
         """
@@ -212,3 +248,5 @@ class ControlFrameWidget(ttk.Frame):
         self.combobox_range.configure(state="readonly")
         self.combobox_resolution.configure(state="readonly")
         self.spin_time.configure(state="readonly")
+        self.moteur_time.configure(state="readonly")
+        self.moteur_throttle.configure(state="readonly")
