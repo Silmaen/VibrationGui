@@ -56,9 +56,16 @@ class MainFrameWidget(ttk.Frame):
         self.rms_view.grid(sticky='nsew')
         self.rms_view.rowconfigure('0', minsize='0', weight='1')
         self.rms_view.columnconfigure('0', weight='1')
-        self.rms_view.configure(graph_title="RMS Mobile",
-                                graph_x_label="Temps",
-                                graph_y_label="Amplitude")
+        self.rms_view.configure(plot_number=3,
+                                graph_title_0="Analyse Fréquentielle",
+                                graph_x_label_0="",
+                                graph_y_label_0="Acceleration (m/s/s)",
+                                graph_title_1="",
+                                graph_x_label_1="",
+                                graph_y_label_1="Voltage (V)",
+                                graph_title_2="",
+                                graph_x_label_2="Fréquence (Hz)",
+                                graph_y_label_2="Courant (A)")
         self.notebook_droit.add(self.rms_view, sticky='nsew', text='RMS mobile')
 
         self.freq_view = FrequencyView(self.notebook_droit, log=self.log)
@@ -71,18 +78,26 @@ class MainFrameWidget(ttk.Frame):
         self.psd_view.grid(sticky='nsew')
         self.psd_view.rowconfigure('0', minsize='0', weight='1')
         self.psd_view.columnconfigure('0', weight='1')
-        self.psd_view.configure(graph_title="Puissance Spectrale",
-                                graph_x_label="Fréquence",
-                                graph_y_label="Puissance")
+        self.psd_view.configure(plot_number=3,
+                                graph_title_0="Puissance Spectrale",
+                                graph_x_label_0="",
+                                graph_y_label_0="Acceleration",
+                                graph_title_1="",
+                                graph_x_label_1="",
+                                graph_y_label_1="Voltage",
+                                graph_title_2="",
+                                graph_x_label_2="Fréquence (Hz)",
+                                graph_y_label_2="Courant")
         self.notebook_droit.add(self.psd_view, sticky='nsew', text='Puissance spectrale')
 
         self.spec_view = FrequencyView(self.notebook_droit, log=self.log)
         self.spec_view.grid(sticky='nsew')
         self.spec_view.rowconfigure('0', minsize='0', weight='1')
         self.spec_view.columnconfigure('0', weight='1')
-        self.spec_view.configure(graph_title="Spectrogramme",
-                                 graph_x_label="Temps",
-                                 graph_y_label="Fréquence")
+        self.spec_view.configure(plot_number=1,
+                                 graph_title_0="Spectrogramme",
+                                 graph_x_label_0="Temps",
+                                 graph_y_label_0="Fréquence")
         self.notebook_droit.add(self.spec_view, sticky='nsew', text='Spectrogramme')
 
         self.console_widget = ConsoleWidget(self)

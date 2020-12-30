@@ -14,15 +14,15 @@ class MyGraphWidget(ttk.Frame):
     """
     def __init__(self, master=None,  **kw):
         ttk.Frame.__init__(self, master, **kw)
-        self.graph_title = "Time Domain Signal"
-        self.graph_x_label = "Time"
-        self.graph_y_label = "Amplitude"
+        self.graph_title = ["Time Domain Signal"]
+        self.graph_x_label = ["Time"]
+        self.graph_y_label = ["Amplitude"]
         self.configure(**kw)
         self.figure = Figure()
-        self.subplot = self.figure.add_subplot(111)
-        self.subplot.set_title(self.graph_title)
-        self.subplot.set_xlabel(self.graph_x_label)
-        self.subplot.set_ylabel(self.graph_y_label)
+        self.subplots = [self.figure.add_subplot(111)]
+        self.subplots[-1].set_title(self.graph_title[-1])
+        self.subplots[-1].set_xlabel(self.graph_x_label[-1])
+        self.subplots[-1].set_ylabel(self.graph_y_label[-1])
         # Espace de dessin
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         # Espace de control
@@ -33,21 +33,40 @@ class MyGraphWidget(ttk.Frame):
         """
         Fonction de configuration (Setter General)
         """
-        key = 'graph_title'
+        key = 'plot_number'
         if key in kw:
-            self.graph_title = kw[key]
-            self.subplot.set_title(self.graph_title)
+            self.set_number_plot(kw[key])
             del kw[key]
-        key = 'graph_x_label'
-        if key in kw:
-            self.graph_x_label = kw[key]
-            self.subplot.set_xlabel(self.graph_x_label)
-            del kw[key]
-        key = 'graph_y_label'
-        if key in kw:
-            self.graph_y_label = kw[key]
-            self.subplot.set_ylabel(self.graph_y_label)
-            del kw[key]
+        key = 'graph_title_'
+        to_del = []
+        for k in kw:
+            if key in k:
+                i = int(k.split(key)[-1])
+                if i >= len(self.graph_y_label):
+                    self.set_number_plot(i+1)
+                self.graph_title[i] = kw[k]
+                self.subplots[i].set_title(self.graph_title[i])
+                to_del.append(k)
+        key = 'graph_x_label_'
+        for k in kw:
+            if key in k:
+                i = int(k.split(key)[-1])
+                if i >= len(self.graph_y_label):
+                    self.set_number_plot(i+1)
+                self.graph_x_label[i] = kw[k]
+                self.subplots[i].set_xlabel(self.graph_x_label[i])
+                to_del.append(k)
+        key = 'graph_y_label_'
+        for k in kw:
+            if key in k:
+                i = int(k.split(key)[-1])
+                if i >= len(self.graph_y_label):
+                    self.set_number_plot(i+1)
+                self.graph_y_label[i] = kw[k]
+                self.subplots[i].set_ylabel(self.graph_y_label[i])
+                to_del.append(k)
+        for k in to_del:
+            del kw[k]
         ttk.Frame.configure(self, cnf, **kw)
 
     config = configure
@@ -58,15 +77,24 @@ class MyGraphWidget(ttk.Frame):
         :param key: nom de la variable demandée
         :return: sa valeur
         """
-        option = 'graph_title'
-        if key == option:
-            return self.graph_title
-        option = 'graph_x_label'
-        if key == option:
-            return self.graph_x_label
-        option = 'graph_y_label'
-        if key == option:
-            return self.graph_y_label
+        option = 'graph_title_'
+        if option in key:
+            i = int(key.split(option)[-1])
+            if i >= len(self.graph_title):
+                return None
+            return self.graph_title[i]
+        option = 'graph_x_label_'
+        if option in key:
+            i = int(key.split(option)[-1])
+            if i >= len(self.graph_title):
+                return None
+            return self.graph_x_label[i]
+        option = 'graph_y_label_'
+        if option in key:
+            i = int(key.split(option)[-1])
+            if i >= len(self.graph_title):
+                return None
+            return self.graph_y_label[i]
         return ttk.Frame.cget(self, key)
 
     def draw(self):
@@ -75,29 +103,54 @@ class MyGraphWidget(ttk.Frame):
         """
         self.canvas.draw()
 
+    def set_number_plot(self, number):
+        """
+        change the number of the plots
+        :param number: the new number of curves
+        """
+        if number == len(self.graph_title):
+            return
+        if number < len(self.graph_title):
+            del self.graph_title[number:]
+            del self.graph_x_label[number:]
+            del self.graph_y_label[number:]
+            self.clear_graph()
+        else:
+            self.graph_title += [""] * (number - len(self.graph_title))
+            self.graph_x_label += [""] * (number - len(self.graph_x_label))
+            self.graph_y_label += [""] * (number - len(self.graph_y_label))
+            self.clear_graph()
+
     def clear_graph(self):
         """
         Nettoie la vue graphique
         """
-        self.subplot.clear()
-        self.subplot.set_title(self.graph_title)
-        self.subplot.set_xlabel(self.graph_x_label)
-        self.subplot.set_ylabel(self.graph_y_label)
+        self.figure.clear()
+        self.subplots.clear()
+        for i in range(len(self.graph_title)):
+            self.subplots.append(self.figure.add_subplot(len(self.graph_title), 1, i+1))
+            if self.graph_title[i] not in ["", None]:
+                self.subplots[-1].set_title(self.graph_title[i])
+            if self.graph_x_label[i] not in ["", None]:
+                self.subplots[-1].set_xlabel(self.graph_x_label[i])
+            if self.graph_y_label[i] not in ["", None]:
+                self.subplots[-1].set_ylabel(self.graph_y_label[i])
 
-    def plot_graphs(self, t, x: list, labels: list = None):
+    def plot_graphs(self, t, x: list, indices: list, labels: list = None):
         """
         Efface le graph courant et trace la courbe x(t).
         :param t: Axe des abscisses
         :param x: liste des courbes
+        :param indices: liste des indice sur le
         :param labels: liste des labels de courbes
         """
         self.clear_graph()
         if labels is not None and len(labels) == len(x):
             for i, xx in enumerate(x):
-                self.subplot.plot(t, xx, label=labels[i])
+                self.subplots[indices[i]].plot(t, xx, label=labels[i])
         else:
-            for xx in x:
-                self.subplot.plot(t, xx)
+            for i, xx in enumerate(x):
+                self.subplots[indices[i]].plot(t, xx)
         self.draw()
 
     def plot_spectrogram(self, t, f, s_log):
@@ -108,5 +161,5 @@ class MyGraphWidget(ttk.Frame):
         :param s_log: le tableau de valeur
         """
         self.clear_graph()
-        self.subplot.pcolormesh(t, f, s_log, shading="auto", cmap='ocean')
+        self.subplots[0].pcolormesh(t, f, s_log, shading="auto", cmap='ocean')
         self.draw()

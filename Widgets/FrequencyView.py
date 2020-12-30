@@ -24,9 +24,10 @@ class FrequencyView(ttk.Frame):
         self.columnconfigure('0', weight='1')
 
         self.Graphique = MyGraphWidget(self)
-        self.Graphique.configure(graph_title="Analyse Fréquentielle",
-                                 graph_x_label="Fréquence",
-                                 graph_y_label="Amplitude")
+        self.Graphique.configure(plot_number=1,
+                                 graph_title_0="Analyse Fréquentielle",
+                                 graph_x_label_0="Fréquence (Hz)",
+                                 graph_y_label_0="Amplitude")
         self.Graphique.grid(sticky='nsew')
 
         self.FrameResult = ttk.Labelframe(self)
@@ -46,6 +47,27 @@ class FrequencyView(ttk.Frame):
         """
         Fonction de configuration (Setter General)
         """
+        print(kw)
+        self.Graphique.configure(**kw)
+        key = 'plot_number'
+        if key in kw:
+            del kw[key]
+        key = 'graph_title_'
+        to_del = []
+        for k in kw:
+            if key in k:
+                to_del.append(k)
+        key = 'graph_x_label_'
+        for k in kw:
+            if key in k:
+                to_del.append(k)
+        key = 'graph_y_label_'
+        for k in kw:
+            if key in k:
+                to_del.append(k)
+        for k in to_del:
+            del kw[k]
+        print(kw)
         key = 'log'
         if key in kw:
             self.log_callback = kw[key]
@@ -53,18 +75,6 @@ class FrequencyView(ttk.Frame):
         key = 'data'
         if key in kw:
             self.set_data(kw[key])
-            del kw[key]
-        key = 'graph_title'
-        if key in kw:
-            self.Graphique.configure(graph_title=kw[key])
-            del kw[key]
-        key = 'graph_x_label'
-        if key in kw:
-            self.Graphique.configure(graph_x_label=kw[key])
-            del kw[key]
-        key = 'graph_y_label'
-        if key in kw:
-            self.Graphique.configure(graph_y_label=kw[key])
             del kw[key]
         ttk.Frame.configure(self, cnf, **kw)
 
@@ -105,8 +115,12 @@ class FrequencyView(ttk.Frame):
             return
         elif calcul == "RMS":
             t, x, y, z = RMS_curve(data["time"], data["ax"], data["ay"], data["az"])
+            t, v5, v, i = RMS_curve(data["time"], data["v5"], data["v"], data["i"])
+            curves = [0, 0, 0, 1, 1, 2]
         elif calcul == "PSD":
             t, x, y, z = compute_PSD(data["time"], data["ax"], data["ay"], data["az"])
+            t, v5, v, i = compute_PSD(data["time"], data["v5"], data["v"], data["i"])
+            curves = [0, 0, 0, 1, 1, 2]
         else:
             n = np.size(data["time"])
             dt, f, s = compute_period(data["time"])
@@ -115,8 +129,12 @@ class FrequencyView(ttk.Frame):
             x = 2.0 / n * np.abs(fftw(data["ax"]))
             y = 2.0 / n * np.abs(fftw(data["ay"]))
             z = 2.0 / n * np.abs(fftw(data["az"]))
+            v5 = 2.0 / n * np.abs(fftw(data["ax"]))
+            v = 2.0 / n * np.abs(fftw(data["ay"]))
+            i = 2.0 / n * np.abs(fftw(data["az"]))
             t = np.linspace(0.0, 1.0 / (2.0 * dt), len(x))
+            curves = [0, 0, 0, 0, 0, 0]
 
         self.peek_value.configure(x=x.max(), y=y.max(), z=z.max())
         self.peek_value_at.configure(x=t[x.argmax()], y=t[y.argmax()], z=t[z.argmax()])
-        self.Graphique.plot_graphs(t, [x, y, z], ["ax", "ay", "az"])
+        self.Graphique.plot_graphs(t, [x, y, z, v5, v, i], curves, ["ax", "ay", "az", "v5", "v", "i"])

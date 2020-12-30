@@ -20,9 +20,16 @@ class AffichageTemporel(ttk.Frame):
         ttk.Frame.__init__(self, master, **kw)
         # zone graphique
         self.Graphique = MyGraphWidget(self)
-        self.Graphique.configure(graph_title="Analyse Temporelle",
-                                 graph_x_label="Temps",
-                                 graph_y_label="Amplitude")
+        self.Graphique.configure(plot_number=3,
+                                 graph_title_0="Analyse Temporelle",
+                                 graph_x_label_0="",
+                                 graph_y_label_0="Acceleration (m/s/s)",
+                                 graph_title_1="",
+                                 graph_x_label_1="",
+                                 graph_y_label_1="Voltage (V)",
+                                 graph_title_2="",
+                                 graph_x_label_2="Temps (s)",
+                                 graph_y_label_2="Courant (A)")
         self.Graphique.grid(sticky='nsew')
 
         # zone de résultats
@@ -62,6 +69,7 @@ class AffichageTemporel(ttk.Frame):
         """
         Fonction de configuration (Setter General)
         """
+        self.Graphique.configure(**kw)
         key = 'log'
         if key in kw:
             self.log_callback = kw[key]
@@ -116,4 +124,6 @@ class AffichageTemporel(ttk.Frame):
                                  y=np.sqrt(np.mean(np.square(data["ay"]))),
                                  z=np.sqrt(np.mean(np.square(data["az"]))))
         self.ValeurStd.configure(x=data["ax"].std(), y=data["ay"].std(), z=data["az"].std())
-        self.Graphique.plot_graphs(data["time"], [data["ax"], data["ay"], data["az"]], ["ax", "ay", "az"])
+        self.Graphique.plot_graphs(data["time"], [data["ax"], data["ay"], data["az"], data["v5"], data["v"], data["i"]],
+                                   [0, 0, 0, 1, 1, 2],
+                                   ["ax", "ay", "az", "v5", "v", "i"])

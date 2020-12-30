@@ -105,6 +105,7 @@ class MesureManager:
             device = findDevice(self.parent)
             if not device:
                 self.parent.log("Pas trouvé de périphérique compatible, pas de mesure.")
+                self.q.put("Task failed")
                 return
             device.set_measure_time(self.parent.option_time)
             device.set_measure_range(self.parent.option_range)
@@ -131,7 +132,8 @@ class MesureManager:
             for line in lines:
                 it = line.split()
                 if len(it) != 7:
-                    self.parent.log("format de linge incorrect")
+                    self.parent.log("format de ligne incorrect: '" + line.decode("ascii") + "' " + str(len(it)))
+                    continue
                 try:
                     tt = float(it[0])/1.e6
                     tax = float(it[1])
@@ -148,16 +150,13 @@ class MesureManager:
                     v.append(tv)
                     i.append(ti)
                 except Exception as err:
-                    self.parent.log("Mauvais décodage de la chaine '" + line + "' : " + str(err))
+                    self.parent.log("Mauvais décodage de la chaine '" + line.decode("ascii") + "' : " + str(err))
             data = {"time": np.array(time), "ax": np.array(ax), "ay": np.array(ay), "az": np.array(az),
                     "v5": np.array(v5), "v": np.array(v), "i": np.array(i)
                     }
             data["ax"] = data["ax"] - data["ax"].mean()
             data["ay"] = data["ay"] - data["ay"].mean()
             data["az"] = data["az"] - data["az"].mean()
-            data["v5"] = data["v5"] - data["v5"].mean()
-            data["v"] = data["v"] - data["v"].mean()
-            data["i"] = data["i"] - data["i"].mean()
             dt, f, std = compute_period(data["time"])
             data["sampling"] = {
                 "number": np.size(data["time"]),
