@@ -47,7 +47,6 @@ class FrequencyView(ttk.Frame):
         """
         Fonction de configuration (Setter General)
         """
-        print(kw)
         self.Graphique.configure(**kw)
         key = 'plot_number'
         if key in kw:
@@ -67,7 +66,6 @@ class FrequencyView(ttk.Frame):
                 to_del.append(k)
         for k in to_del:
             del kw[k]
-        print(kw)
         key = 'log'
         if key in kw:
             self.log_callback = kw[key]
