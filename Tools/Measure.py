@@ -125,25 +125,39 @@ class MesureManager:
             ax = []
             ay = []
             az = []
+            v5 = []
+            v = []
+            i = []
             for line in lines:
                 it = line.split()
-                if len(it) != 4:
+                if len(it) != 7:
                     self.parent.log("format de linge incorrect")
                 try:
                     tt = float(it[0])/1.e6
                     tax = float(it[1])
                     tay = float(it[2])
                     taz = float(it[3])
+                    tv5 = float(it[4])
+                    tv = float(it[5])
+                    ti = float(it[6])
                     time.append(tt)
                     ax.append(tax)
                     ay.append(tay)
                     az.append(taz)
+                    v5.append(tv5)
+                    v.append(tv)
+                    i.append(ti)
                 except Exception as err:
                     self.parent.log("Mauvais décodage de la chaine '" + line + "' : " + str(err))
-            data = {"time": np.array(time), "ax": np.array(ax), "ay": np.array(ay), "az": np.array(az)}
+            data = {"time": np.array(time), "ax": np.array(ax), "ay": np.array(ay), "az": np.array(az),
+                    "v5": np.array(v5), "v": np.array(v), "i": np.array(i)
+                    }
             data["ax"] = data["ax"] - data["ax"].mean()
             data["ay"] = data["ay"] - data["ay"].mean()
             data["az"] = data["az"] - data["az"].mean()
+            data["v5"] = data["v5"] - data["v5"].mean()
+            data["v"] = data["v"] - data["v"].mean()
+            data["i"] = data["i"] - data["i"].mean()
             dt, f, std = compute_period(data["time"])
             data["sampling"] = {
                 "number": np.size(data["time"]),
@@ -156,4 +170,7 @@ class MesureManager:
             data["ax"] = sp.sosfilt(sos, data["ax"])
             data["ay"] = sp.sosfilt(sos, data["ay"])
             data["az"] = sp.sosfilt(sos, data["az"])
+            data["v5"] = sp.sosfilt(sos, data["v5"])
+            data["v"] = sp.sosfilt(sos, data["v"])
+            data["i"] = sp.sosfilt(sos, data["i"])
             return data
