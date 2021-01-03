@@ -1,6 +1,7 @@
 """
 Module de définition du cadre des controls
 """
+import tkinter as tk
 import tkinter.ttk as ttk
 
 
@@ -40,7 +41,7 @@ class ControlFrameWidget(ttk.Frame):
         ttk.Label(self.frame_mesure, text='Échelle de mesure:').grid(row='1', sticky='nsew')
         self.combobox_range = ttk.Combobox(self.frame_mesure)
         self.combobox_range.config(state="readonly", values=["2G", "4G", "8G", "16G"])
-        self.combobox_range.current(3)
+        self.combobox_range.current(0)
         self.combobox_range.grid(row='2', sticky='nsew')
         self.combobox_range.bind("<<ComboboxSelected>>", self.validate_range)
 
@@ -59,19 +60,24 @@ class ControlFrameWidget(ttk.Frame):
 
         ttk.Label(self.frame_mesure, text='Delay activation moteur (ms):').grid(row='7', sticky='nsew')
         self.moteur_time = ttk.Spinbox(self.frame_mesure)
-        self.moteur_time.config(state="readonly", command=self.moteur_time_change, from_=100, to=1000, increment=100)
-        self.moteur_time.set(100)
+        self.moteur_time.config(state="readonly", command=self.moteur_time_change, from_=0, to=5000, increment=200)
+        self.moteur_time.set(3000)
         self.moteur_time.grid(row='8', sticky='nsew')
 
         ttk.Label(self.frame_mesure, text='gaz moteur (%):').grid(row='9', sticky='nsew')
         self.moteur_throttle = ttk.Spinbox(self.frame_mesure)
-        self.moteur_throttle.config(state="readonly", command=self.moteur_throttle_change, from_=0, to=100, increment=10)
-        self.moteur_throttle.set(20)
+        self.moteur_throttle.config(state="readonly", command=self.moteur_throttle_change, from_=0, to=30, increment=1)
+        self.moteur_throttle.set(5)
         self.moteur_throttle.grid(row='10', sticky='nsew')
+
+        self.bin_fmt = tk.BooleanVar()
+        self.bin_fmt.set(True)
+        self.bin_format = ttk.Checkbutton(self.frame_mesure, text="Transfert binaire", variable=self.bin_fmt)
+        self.bin_format.grid(row='11', sticky='nsew')
 
         self.button_mesure = ttk.Button(self.frame_mesure)
         self.button_mesure.config(state='disabled', text='Mesure')
-        self.button_mesure.grid(row='11', sticky='nsew')
+        self.button_mesure.grid(row='12', sticky='nsew')
 
         ttk.Separator(self, orient='horizontal').grid(column='0', row='3', sticky='nsew')
 
@@ -139,7 +145,10 @@ class ControlFrameWidget(ttk.Frame):
         """
         Événement lors d'un changement de valeur
         """
-        self.log("Changement des gaz moteur: " + str(self.moteur_throttle.get()), 5)
+        low =982
+        hig = 2006
+        self.log("Changement des gaz moteur: " + str(self.moteur_throttle.get()) + "% ", 5)
+        self.log("Changement des gaz moteur: " + str(int(low+float(self.moteur_throttle.get())/100.0*(hig-low))) + "µs ", 5)
         if self.moteur_throttle_change_callback is not None:
             self.moteur_throttle_change_callback()
 

@@ -4,6 +4,7 @@ Module de définition de la classe d'interface avec l'appareil de mesure
 import serial
 import time
 import serial.tools.list_ports
+import struct
 
 old_mesure_methode = True
 
@@ -15,6 +16,7 @@ class VibrationDevice:
     def __init__(self, parent, port):
         self.__isVibDev = False
         self.parent = parent
+        self.bin_fmt = False
         if port in [None, ""]:
             return
         try:
@@ -137,6 +139,21 @@ class VibrationDevice:
         if not self.__wait_ready():
             self.parent.log("Impossible de définir les gaz moteur")
 
+    def set_binary(self, binary: bool):
+        """
+        Défini le format d'échange des données brute avec le périphérique
+        :param binary: TRue: format binaire, sinon, format ascii
+        """
+        self.bin_fmt = binary
+        if self.bin_fmt:
+            self.__write(b"set_binary")
+            if not self.__wait_ready():
+                self.parent.log("Impossible de définir le format binaire")
+        else:
+            self.__write(b"set_ascii")
+            if not self.__wait_ready():
+                self.parent.log("Impossible de définir le format ascii")
+
     def measure(self):
         """
         Lance la commande de mesure
@@ -146,9 +163,38 @@ class VibrationDevice:
             return []
         self.com.flushInput()
         self.__write(b"measure")
-        if old_mesure_methode:
-            lines = []
-            self.parent.log("measuring, please wait...", 3)
+        lines = []
+        self.parent.log("measuring, please wait...", 3)
+
+        if self.bin_fmt:
+            bin_mode = False
+            bin_len = 40
+            while 1:
+                if bin_mode:
+                    line = self.com.read(bin_len)
+                    if line == b"0" * bin_len:
+                        bin_mode = False
+                        break
+                    items = [
+                        struct.unpack("Q", line[0:8])[0],
+                        # struct.unpack("f", byte_line[8:12])[0],
+                        struct.unpack("f", line[12:16])[0],
+                        struct.unpack("f", line[16:20])[0],
+                        struct.unpack("f", line[20:24])[0],
+                        struct.unpack("f", line[24:28])[0],
+                        struct.unpack("f", line[28:32])[0],
+                        struct.unpack("f", line[32:36])[0],
+                        # struct.unpack("f", byte_line[36:40])[0],
+                    ]
+                    lines.append(items)
+                else:
+                    line = self.__read_line().strip()
+                    if b"MESBIN" in line:
+                        lines = []
+                        bin_len = int(line.split()[1])
+                        bin_mode = True
+                        continue
+        else:
             rdy_count = 0
             while 1:
                 line = self.__read_line().strip()
@@ -157,29 +203,11 @@ class VibrationDevice:
                     if rdy_count == 3:
                         break
                     continue
-                if b"MES" in line:
+                if b"MESASC" in line:
                     lines = []
                     continue
                 lines.append(line)
             self.parent.log("measure done", 3)
-        else:
-            raw_data = b""
-            self.parent.log("measuring, please wait...", 3)
-            while 1:
-                raw_line = self.com.read(3)
-                raw_data += raw_line
-                if b"RDY" in raw_line:
-                    break
-            self.parent.log("measure done", 3)
-            lines = []
-            inlines = raw_data.splitlines(keepends=False)
-            for inline in inlines:
-                if b"MES" in inline:
-                    lines = []
-                    continue
-                if b"RDY" in inline:
-                    break
-                lines.append(inline)
         return lines
 
 

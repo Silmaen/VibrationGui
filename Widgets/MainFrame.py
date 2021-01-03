@@ -89,16 +89,16 @@ class MainFrameWidget(ttk.Frame):
         self.psd_view.rowconfigure('0', minsize='0', weight='1')
         self.psd_view.columnconfigure('0', weight='1')
         self.psd_view.configure(plot_number=3,
-                                graph_title_0="Puissance Spectrale",
+                                graph_title_0="Densité Spectrale de Puissance",
                                 graph_x_label_0="",
-                                graph_y_label_0="Acceleration",
+                                graph_y_label_0="Acceleration (10^-3)",
                                 graph_title_1="",
                                 graph_x_label_1="",
                                 graph_y_label_1="Voltage",
                                 graph_title_2="",
                                 graph_x_label_2="Fréquence (Hz)",
                                 graph_y_label_2="Courant")
-        self.notebook_droit.add(self.psd_view, sticky='nsew', text='Puissance spectrale')
+        self.notebook_droit.add(self.psd_view, sticky='nsew', text='Densité Spectrale de Puissance')
 
         self.spec_view = FrequencyView(self.notebook_droit, log=self.log)
         self.spec_view.grid(sticky='nsew')
@@ -243,4 +243,5 @@ class MainFrameWidget(ttk.Frame):
         self.mesure_manager.option_resolution = self.control_frame.cget("mesure_resolution")
         self.mesure_manager.option_motor_delay = self.control_frame.cget("motor_delay")
         self.mesure_manager.option_motor_throttle = self.control_frame.cget("motor_throttle")
+        self.mesure_manager.option_bin_fmt = self.control_frame.bin_fmt.get()
         self.mesure_manager.Mesure()

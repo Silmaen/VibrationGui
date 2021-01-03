@@ -100,6 +100,9 @@ def compute_PSD(data_t, data_x, data_y=None, data_z=None):
     f, pxx = signal.welch(data_x, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
     f, pyy = signal.welch(data_y, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
     f, pzz = signal.welch(data_z, fs=fs, nperseg=int(2*fs), noverlap=int(2*fs)-1)
+    pxx *= 1000
+    pyy *= 1000
+    pzz *= 1000
     if data_y is None:
         return f, pxx
     if data_z is None:

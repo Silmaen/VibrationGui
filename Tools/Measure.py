@@ -26,6 +26,7 @@ class MesureManager:
         self.option_resolution = 1
         self.option_motor_delay = 100
         self.option_motor_throttle = 20
+        self.option_bin_fmt = False
 
     def log(self, msg: str, lvl: int = 1):
         """
@@ -122,6 +123,7 @@ class MesureManager:
             device.set_measure_resolution(self.parent.option_resolution)
             device.set_motor_delay(self.parent.option_motor_delay)
             device.set_motor_throttle(self.parent.option_motor_throttle)
+            device.set_binary(self.parent.option_bin_fmt)
             self.parent.set_data(self.mesure(device))
             device.com.close()
             self.parent.log("Mesure Terminée", 3)
@@ -141,28 +143,38 @@ class MesureManager:
             v5 = []
             v = []
             i = []
-            for line in lines:
-                it = line.split()
-                if len(it) != 7:
-                    self.parent.log("format de ligne incorrect: '" + line.decode("ascii") + "' " + str(len(it)))
-                    continue
-                try:
-                    tt = float(it[0])/1.e6
-                    tax = float(it[1])
-                    tay = float(it[2])
-                    taz = float(it[3])
-                    tv5 = float(it[4])
-                    tv = float(it[5])
-                    ti = float(it[6])
-                    time.append(tt)
-                    ax.append(tax)
-                    ay.append(tay)
-                    az.append(taz)
-                    v5.append(tv5)
-                    v.append(tv)
-                    i.append(ti)
-                except Exception as err:
-                    self.parent.log("Mauvais décodage de la chaine '" + line.decode("ascii") + "' : " + str(err))
+            if device.bin_fmt:
+                for line in lines:
+                    time.append(line[0]/1.e6)
+                    ax.append(line[1])
+                    ay.append(line[2])
+                    az.append(line[3])
+                    v5.append(line[4])
+                    v.append(line[5])
+                    i.append(line[6])
+            else:
+                for line in lines:
+                    it = line.split()
+                    if len(it) != 7:
+                        self.parent.log("format de ligne incorrect: '" + line.decode("ascii") + "' " + str(len(it)))
+                        continue
+                    try:
+                        tt = float(it[0])/1.e6
+                        tax = float(it[1])
+                        tay = float(it[2])
+                        taz = float(it[3])
+                        tv5 = float(it[4])
+                        tv = float(it[5])
+                        ti = float(it[6])
+                        time.append(tt)
+                        ax.append(tax)
+                        ay.append(tay)
+                        az.append(taz)
+                        v5.append(tv5)
+                        v.append(tv)
+                        i.append(ti)
+                    except Exception as err:
+                        self.parent.log("Mauvais décodage de la chaine '" + line.decode("ascii") + "' : " + str(err))
             data = {"time": np.array(time), "ax": np.array(ax), "ay": np.array(ay), "az": np.array(az),
                     "v5": np.array(v5), "v": np.array(v), "i": np.array(i)
                     }
